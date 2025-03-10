@@ -55,11 +55,11 @@ for container in $running_containers; do
     fi
 
     ### RULE #4 - Prevent in-container privilege escalation ###
-    no_new_priv=$(docker inspect $container --format '{{if .HostConfig.NoNewPrivileges}}{{.HostConfig.NoNewPrivileges}}{{else}}false{{end}}')
-    if [ "$no_new_priv" == "true" ]; then
-        echo "[OK] Container $container has 'no-new-privileges' enabled."
+    privileged=$(docker inspect --format '{{.HostConfig.Privileged}}' $container)
+    if [ "$privileged" == "true" ]; then
+        echo "[WARNING] Container $container is running in privileged mode!"
     else
-        echo "[WARNING] Container $container allows privilege escalation!"
+        echo "[OK] Container $container is not running in privileged mode."
     fi
 
     ### RULE #5 - Check Inter-Container Connectivity ###
